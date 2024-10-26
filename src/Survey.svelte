@@ -7,6 +7,8 @@
 
   let deleted = false;
 
+  $: total = item.options.reduce((acc, option) => acc + option.votes, 0);
+
   const vote = 0;
   const modifyState = 1;
 
@@ -51,7 +53,6 @@
   }
 
   function calcPercent(votes) {
-    const total = item.options.reduce((acc, option) => acc + option.votes, 0);
     const p = total > 0 ? (votes / total) * 100 : 0;
     return `${p}%`;
   }
