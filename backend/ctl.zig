@@ -6,6 +6,11 @@ const scrypt = std.crypto.pwhash.scrypt;
 
 const log = std.log.scoped(.nochfragenctl);
 
+const ParsedAddress = @import("ParsedAddress.zig");
+const parseAddress = ParsedAddress.parse;
+
+const default_redis_address = ParsedAddress{ .ip = "127.0.0.1", .port = 6379 };
+
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();
@@ -49,20 +54,6 @@ pub fn main() !void {
         log.err("No command given", .{});
         std.process.exit(1);
     }
-}
-
-const ParsedAddress = struct { ip: []const u8, port: u16 };
-const default_redis_address = ParsedAddress{ .ip = "127.0.0.1", .port = 6379 };
-
-fn parseAddress(address: []const u8) !ParsedAddress {
-    var iter = std.mem.split(u8, address, ":");
-
-    const ip = iter.next() orelse return error.AddressParseError;
-    const port_raw = iter.next() orelse return error.AddressParseError;
-    if (iter.next() != null) return error.AddressParseError;
-    const port = std.fmt.parseInt(u16, port_raw, 10) catch return error.AddressParseError;
-
-    return ParsedAddress{ .ip = ip, .port = port };
 }
 
 fn setPassword(allocator: std.mem.Allocator, redis_address: ParsedAddress, password: []const u8) !void {
