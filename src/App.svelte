@@ -1,6 +1,4 @@
 <script>
-  import { preventDefault } from "svelte/legacy";
-
   import * as bootstrap from "bootstrap";
   import { onMount } from "svelte";
   import Ask from "./Ask.svelte";
@@ -159,7 +157,9 @@
       });
   }
 
-  async function login() {
+  async function login(ev) {
+    ev.preventDefault();
+
     await fetch(`api/login`, {
       method: "POST",
       body: JSON.stringify({ password: password }),
@@ -440,7 +440,7 @@
           aria-label="Close"
         ></button>
       </div>
-      <form onsubmit={preventDefault(login)}>
+      <form onsubmit={login}>
         <div class="modal-body">
           {#if passwordModalAlert !== ""}
             <div class="alert alert-danger" role="alert">

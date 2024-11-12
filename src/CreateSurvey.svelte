@@ -1,6 +1,4 @@
 <script>
-  import { preventDefault } from "svelte/legacy";
-
   import { createEventDispatcher } from "svelte";
   import { _, t, format } from "svelte-i18n";
 
@@ -10,7 +8,9 @@
   let newOptionText = $state("");
   let options = $state([]);
 
-  async function submitQuestion() {
+  async function submitQuestion(ev) {
+    ev.preventDefault();
+
     await fetch(`api/surveys`, {
       method: "POST",
       body: JSON.stringify({ text: questionText, options: options }),
@@ -41,7 +41,7 @@
 </script>
 
 <div class="list-group-item">
-  <form onsubmit={preventDefault(submitQuestion)}>
+  <form onsubmit={submitQuestion}>
     <label for="surveyQuestionText" class="form-label"
       >{$_("app.surveycreationmodal.title")}</label
     >
