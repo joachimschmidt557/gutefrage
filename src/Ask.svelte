@@ -1,8 +1,7 @@
 <script>
-  import { createEventDispatcher } from "svelte";
   import { _, t, format } from "svelte-i18n";
 
-  const dispatch = createEventDispatcher();
+  let { success, error } = $props();
 
   let questionText = $state("");
 
@@ -26,9 +25,9 @@
         }
 
         questionText = "";
-        dispatch("success", "");
+        success();
       })
-      .catch((error) => dispatch("error", error));
+      .catch((e) => error(e));
   }
 </script>
 

@@ -228,9 +228,9 @@
     await updateQuestionsAndSurveys();
   }
 
-  function submitError(event) {
+  function submitError(error) {
     alertDanger = $_("response.error.question.submit", {
-      values: { detail: event.detail },
+      values: { detail: error },
     });
   }
 
@@ -376,7 +376,7 @@
     </ul>
 
     <ul class="list-group">
-      <Ask on:success={submitSuccess} on:error={submitError} />
+      <Ask success={submitSuccess} error={submitError} />
       <List {items} {loggedIn} />
     </ul>
 
