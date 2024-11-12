@@ -107,7 +107,7 @@ pub fn readRequestCookies(
     } else return &[_]Cookie{};
 
     var cookies = std.ArrayList(Cookie).init(allocator);
-    var iter = std.mem.split(u8, header, ";");
+    var iter = std.mem.split(u8, header, "; ");
     while (iter.next()) |item| {
         var parts = std.mem.split(u8, item, "=");
         const name = parts.next() orelse continue;
