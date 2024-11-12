@@ -1,10 +1,12 @@
 <script>
+  import { preventDefault } from "svelte/legacy";
+
   import { createEventDispatcher } from "svelte";
   import { _, t, format } from "svelte-i18n";
 
   const dispatch = createEventDispatcher();
 
-  let questionText = "";
+  let questionText = $state("");
 
   async function submitQuestion() {
     await fetch(`api/questions`, {
@@ -19,7 +21,7 @@
                 status: response.status,
                 statusText: response.statusText,
               },
-            })
+            }),
           );
         }
 
@@ -31,7 +33,7 @@
 </script>
 
 <div class="list-group-item">
-  <form on:submit|preventDefault={submitQuestion}>
+  <form onsubmit={preventDefault(submitQuestion)}>
     <label for="questionText" class="form-label">{$_("app.ask.title")}</label>
     <div class="d-flex justify-content-between">
       <input bind:value={questionText} class="form-control" id="questionText" />

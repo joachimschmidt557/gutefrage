@@ -1,4 +1,6 @@
 <script>
+  import { preventDefault } from "svelte/legacy";
+
   import * as bootstrap from "bootstrap";
   import { onMount } from "svelte";
   import Ask from "./Ask.svelte";
@@ -21,7 +23,7 @@
     { id: 1, locale: "de", text: `Deutsch` },
   ];
 
-  let selected = 0;
+  let selected = $state(0);
 
   languages.forEach((l) => {
     if (l.locale === getLocaleFromNavigator()) {
@@ -47,21 +49,21 @@
     getLoginStatus();
   });
 
-  let updating = true;
-  let loggedIn = false;
+  let updating = $state(true);
+  let loggedIn = $state(false);
 
-  let items = [];
-  let answeredItems = [];
-  let hiddenItems = [];
-  let hiddenAnsweredItems = [];
-  let surveyItems = [];
+  let items = $state([]);
+  let answeredItems = $state([]);
+  let hiddenItems = $state([]);
+  let hiddenAnsweredItems = $state([]);
+  let surveyItems = $state([]);
 
-  let connected = true;
-  let password = "";
-  let passwordModalAlert = "";
-  let deleteModalAlert = "";
-  let alertSuccess = "";
-  let alertDanger = "";
+  let connected = $state(true);
+  let password = $state("");
+  let passwordModalAlert = $state("");
+  let deleteModalAlert = $state("");
+  let alertSuccess = $state("");
+  let alertDanger = $state("");
 
   class ServerError extends Error {
     constructor(message, statusCode) {
@@ -101,13 +103,13 @@
         if (!questions.ok) {
           throw new ServerError(
             $_("response.error.question.general"),
-            statusCode
+            statusCode,
           );
         }
         if (!surveys.ok) {
           throw new ServerError(
             $_("response.error.survey.general"),
-            statusCode
+            statusCode,
           );
         }
 
@@ -123,12 +125,12 @@
           (x) =>
             x.state !== answered &&
             x.state !== hidden &&
-            x.state !== hiddenAnswered
+            x.state !== hiddenAnswered,
         );
         answeredItems = questions.filter((x) => x.state === answered);
         hiddenItems = questions.filter((x) => x.state === hidden);
         hiddenAnsweredItems = questions.filter(
-          (x) => x.state === hiddenAnswered
+          (x) => x.state === hiddenAnswered,
         );
         surveyItems = surveys;
 
@@ -172,7 +174,7 @@
                 status: response.status,
                 statusText: response.statusText,
               },
-            })
+            }),
           );
         }
 
@@ -182,7 +184,7 @@
 
         var loginModal = bootstrap.Modal.getOrCreateInstance(
           document.getElementById("loginModal"),
-          {}
+          {},
         );
         loginModal.hide();
         updateQuestionsAndSurveys();
@@ -214,7 +216,7 @@
         deleteModalAlert = "";
         var deleteModal = bootstrap.Modal.getOrCreateInstance(
           document.getElementById("deleteModal"),
-          {}
+          {},
         );
         deleteModal.hide();
       })
@@ -256,7 +258,7 @@
     return countryCode
       .toUpperCase()
       .replace(/./g, (char) =>
-        String.fromCodePoint(127397 + char.charCodeAt())
+        String.fromCodePoint(127397 + char.charCodeAt()),
       );
   }
 </script>
@@ -268,7 +270,7 @@
       <select
         class="form-select"
         bind:value={selected}
-        on:change={switchLanguage}
+        onchange={switchLanguage}
       >
         {#each languages as lang}
           {#if lang.id === 0}
@@ -288,7 +290,7 @@
 
     <span class="navbar-brand mb-0 h1">
       {#if loggedIn}
-        <button type="button" on:click={logout} class="btn"
+        <button type="button" onclick={logout} class="btn"
           >{$_("app.moderator.logout")}</button
         >
       {:else}
@@ -308,11 +310,11 @@
       <div class="alert alert-success alert-dismissible" role="alert">
         {alertSuccess}
         <button
-          on:click={dismissAlertSuccess}
+          onclick={dismissAlertSuccess}
           type="button"
           class="btn-close"
           aria-label="Close"
-        />
+        ></button>
       </div>
     {/if}
 
@@ -320,11 +322,11 @@
       <div class="alert alert-danger alert-dismissible" role="alert">
         {$_(translateAlertDanger(alertDanger))}
         <button
-          on:click={dismissAlertDanger}
+          onclick={dismissAlertDanger}
           type="button"
           class="btn-close"
           aria-label="Close"
-        />
+        ></button>
       </div>
     {/if}
 
@@ -332,7 +334,7 @@
       <div>
         <button
           type="button"
-          on:click={updateQuestionsAndSurveys}
+          onclick={updateQuestionsAndSurveys}
           class="btn btn-outline-primary"
           disabled={updating}
         >
@@ -436,9 +438,9 @@
           class="btn-close"
           data-bs-dismiss="modal"
           aria-label="Close"
-        />
+        ></button>
       </div>
-      <form on:submit|preventDefault={login}>
+      <form onsubmit={preventDefault(login)}>
         <div class="modal-body">
           {#if passwordModalAlert !== ""}
             <div class="alert alert-danger" role="alert">
@@ -487,7 +489,7 @@
           class="btn-close"
           data-bs-dismiss="modal"
           aria-label="Close"
-        />
+        ></button>
       </div>
       <div class="modal-body">
         {#if deleteModalAlert !== ""}
@@ -506,8 +508,7 @@
         <button
           type="submit"
           class="btn btn-danger"
-          on:click={deleteAllQuestions}
-          >{$_("app.deleteallmodal.action")}</button
+          onclick={deleteAllQuestions}>{$_("app.deleteallmodal.action")}</button
         >
       </div>
     </div>

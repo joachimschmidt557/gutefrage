@@ -1,8 +1,7 @@
 <script>
   import Survey from "./Survey.svelte";
 
-  export let surveyItems;
-  export let loggedIn;
+  let { surveyItems, loggedIn } = $props();
 </script>
 
 {#if surveyItems}

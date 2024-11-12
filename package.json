@@ -10,21 +10,21 @@
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
-    "prettier": "prettier --write --plugin-search-dir=. ./**/*.svelte ./**/*.json"
+    "prettier": "prettier --write ./**/*.svelte ./**/*.json"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^17.0.0",
+    "@rollup/plugin-commonjs": "^28.0.0",
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.0.0",
-    "prettier": "^2.4.0",
-    "prettier-plugin-svelte": "^2.10.1",
+    "prettier": "^3.1.0",
+    "prettier-plugin-svelte": "^3.2.6",
     "rollup": "^2.3.4",
     "rollup-plugin-css-only": "^3.1.0",
     "rollup-plugin-livereload": "^2.0.0",
-    "rollup-plugin-svelte": "^7.1.5",
+    "rollup-plugin-svelte": "^7.2.2",
     "rollup-plugin-terser": "^7.0.0",
-    "svelte": "^4.0.0",
-    "svelte-i18n": "^3.6.0"
+    "svelte": "^5.0.0",
+    "svelte-i18n": "^4.0.0"
   },
   "dependencies": {
     "bootstrap": "^5.1.1"

@@ -1,10 +1,9 @@
 <script>
   import { _, t, format } from "svelte-i18n";
 
-  export let item;
-  export let loggedIn;
+  let { item = $bindable(), loggedIn } = $props();
 
-  let deleted = false;
+  let deleted = $state(false);
 
   const hidden = 0;
   const unanswered = 1;
@@ -51,14 +50,14 @@
       <div class="btn-group" role="group">
         {#if loggedIn}
           <button
-            on:click={() => deleteQuestion()}
+            onclick={() => deleteQuestion()}
             type="button"
             class="btn btn-danger"
           >
             {$_("app.questions.item.delete")}
           </button>
           <button
-            on:click={() => changeState(hidden)}
+            onclick={() => changeState(hidden)}
             type="button"
             class={item.state === hidden
               ? "btn btn-secondary active"
@@ -67,7 +66,7 @@
             {$_("app.questions.item.status.hidden")}
           </button>
           <button
-            on:click={() => changeState(unanswered)}
+            onclick={() => changeState(unanswered)}
             type="button"
             class={item.state === unanswered
               ? "btn btn-secondary active"
@@ -76,7 +75,7 @@
             {$_("app.questions.item.status.unanswered")}
           </button>
           <button
-            on:click={() => changeState(answering)}
+            onclick={() => changeState(answering)}
             type="button"
             class={item.state === answering
               ? "btn btn-secondary active"
@@ -85,7 +84,7 @@
             {$_("app.questions.item.status.answering")}
           </button>
           <button
-            on:click={() => changeState(answered)}
+            onclick={() => changeState(answered)}
             type="button"
             class={item.state === answered
               ? "btn btn-secondary active"
@@ -94,7 +93,7 @@
             {$_("app.questions.item.status.answered")}
           </button>
           <button
-            on:click={() => changeState(hiddenAnswered)}
+            onclick={() => changeState(hiddenAnswered)}
             type="button"
             class={item.state === hiddenAnswered
               ? "btn btn-secondary active"
@@ -105,7 +104,7 @@
         {/if}
       </div>
       <button
-        on:click={upvote}
+        onclick={upvote}
         disabled={item.upvoted}
         type="button"
         class={item.state === answering ? "btn btn-light" : "btn btn-primary"}
