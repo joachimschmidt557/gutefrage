@@ -1,8 +1,7 @@
 <script>
   import Item from "./Item.svelte";
 
-  export let items;
-  export let loggedIn;
+  let { items, loggedIn } = $props();
 </script>
 
 {#if items}

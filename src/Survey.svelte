@@ -1,13 +1,14 @@
 <script>
   import { _, t, format } from "svelte-i18n";
-  export let item;
-  export let loggedIn;
+  let { item = $bindable(), loggedIn } = $props();
 
-  let choice = -1;
+  let choice = $state(-1);
 
-  let deleted = false;
+  let deleted = $state(false);
 
-  $: total = item.options.reduce((acc, option) => acc + option.votes, 0);
+  let total = $derived(
+    item.options.reduce((acc, option) => acc + option.votes, 0),
+  );
 
   const vote = 0;
   const modifyState = 1;
@@ -64,15 +65,15 @@
       {item.text}
       <div class="btn-group" role="group">
         {#if loggedIn}
-          <button on:click={del} type="button" class="btn btn-danger">
+          <button onclick={del} type="button" class="btn btn-danger">
             {$_("app.surveys.delete")}
           </button>
           {#if item.state === visible}
-            <button on:click={hide} type="button" class="btn btn-primary">
+            <button onclick={hide} type="button" class="btn btn-primary">
               {$_("app.surveys.hide")}
             </button>
           {:else}
-            <button on:click={show} type="button" class="btn btn-primary">
+            <button onclick={show} type="button" class="btn btn-primary">
               {$_("app.surveys.show")}
             </button>
           {/if}
@@ -98,14 +99,14 @@
               class="progress-bar"
               role="progressbar"
               style:width={calcPercent(option.votes)}
-            />
+            ></div>
           </div></label
         >
       {/each}
     </div>
     {#if !item.voted}
       <button
-        on:click={submit}
+        onclick={submit}
         class="btn btn-primary mt-2"
         disabled={choice == -1}>{$_("app.surveys.submit")}</button
       >

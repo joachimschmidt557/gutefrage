@@ -1,14 +1,15 @@
 <script>
-  import { createEventDispatcher } from "svelte";
   import { _, t, format } from "svelte-i18n";
 
-  const dispatch = createEventDispatcher();
+  let { success, error } = $props();
 
-  let questionText = "";
-  let newOptionText = "";
-  let options = [];
+  let questionText = $state("");
+  let newOptionText = $state("");
+  let options = $state([]);
 
-  async function submitQuestion() {
+  async function submitQuestion(ev) {
+    ev.preventDefault();
+
     await fetch(`api/surveys`, {
       method: "POST",
       body: JSON.stringify({ text: questionText, options: options }),
@@ -21,15 +22,15 @@
                 status: response.status,
                 statusText: response.statusText,
               },
-            })
+            }),
           );
         }
 
         questionText = "";
         options = [];
-        dispatch("success", "");
+        success();
       })
-      .catch((error) => dispatch("error", error));
+      .catch((e) => error(e));
   }
 
   function addOption() {
@@ -39,7 +40,7 @@
 </script>
 
 <div class="list-group-item">
-  <form on:submit|preventDefault={submitQuestion}>
+  <form onsubmit={submitQuestion}>
     <label for="surveyQuestionText" class="form-label"
       >{$_("app.surveycreationmodal.title")}</label
     >
@@ -58,9 +59,9 @@
     </div>
     {#each options as option, index}
       <div class="input-group mb-2">
-        <input bind:value={option} class="form-control" />
+        <input bind:value={options[index]} class="form-control" />
         <button
-          on:click={() => (options = options.filter((_, i) => i != index))}
+          onclick={() => (options = options.filter((_, i) => i != index))}
           class="btn btn-outline-danger"
           type="button">{$_("app.surveycreationmodal.remove")}</button
         >
@@ -69,7 +70,7 @@
     <div class="input-group mb-2">
       <input bind:value={newOptionText} class="form-control" />
       <button
-        on:click={addOption}
+        onclick={addOption}
         class="btn btn-outline-secondary"
         type="button"
         disabled={newOptionText === ""}
