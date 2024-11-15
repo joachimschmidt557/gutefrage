@@ -1,14 +1,12 @@
 <script>
-  import { _, t, format } from "svelte-i18n";
+  import { _, t, format } from 'svelte-i18n';
   let { item = $bindable(), loggedIn } = $props();
 
   let choice = $state(-1);
 
   let deleted = $state(false);
 
-  let total = $derived(
-    item.options.reduce((acc, option) => acc + option.votes, 0),
-  );
+  let total = $derived(item.options.reduce((acc, option) => acc + option.votes, 0));
 
   const vote = 0;
   const modifyState = 1;
@@ -18,8 +16,8 @@
 
   async function submit() {
     await fetch(`api/survey/${item.id}`, {
-      method: "PUT",
-      body: JSON.stringify({ mode: vote, vote: choice, state: hidden }),
+      method: 'PUT',
+      body: JSON.stringify({ mode: vote, vote: choice, state: hidden })
     }).then(() => {
       item.voted = true;
     });
@@ -27,29 +25,29 @@
 
   async function show() {
     await fetch(`api/survey/${item.id}`, {
-      method: "PUT",
+      method: 'PUT',
       body: JSON.stringify({
         mode: modifyState,
         vote: 0,
-        state: visible,
-      }),
+        state: visible
+      })
     }).then(() => (item.state = visible));
   }
 
   async function hide() {
     await fetch(`api/survey/${item.id}`, {
-      method: "PUT",
+      method: 'PUT',
       body: JSON.stringify({
         mode: modifyState,
         vote: 0,
-        state: hidden,
-      }),
+        state: hidden
+      })
     }).then(() => (item.state = hidden));
   }
 
   async function del() {
     await fetch(`api/survey/${item.id}`, {
-      method: "DELETE",
+      method: 'DELETE'
     }).then(() => (deleted = true));
   }
 
@@ -66,15 +64,15 @@
       <div class="btn-group" role="group">
         {#if loggedIn}
           <button onclick={del} type="button" class="btn btn-danger">
-            {$_("app.surveys.delete")}
+            {$_('app.surveys.delete')}
           </button>
           {#if item.state === visible}
             <button onclick={hide} type="button" class="btn btn-primary">
-              {$_("app.surveys.hide")}
+              {$_('app.surveys.hide')}
             </button>
           {:else}
             <button onclick={show} type="button" class="btn btn-primary">
-              {$_("app.surveys.show")}
+              {$_('app.surveys.show')}
             </button>
           {/if}
         {/if}
@@ -105,10 +103,8 @@
       {/each}
     </div>
     {#if !item.voted}
-      <button
-        onclick={submit}
-        class="btn btn-primary mt-2"
-        disabled={choice == -1}>{$_("app.surveys.submit")}</button
+      <button onclick={submit} class="btn btn-primary mt-2" disabled={choice == -1}
+        >{$_('app.surveys.submit')}</button
       >
     {/if}
   </li>

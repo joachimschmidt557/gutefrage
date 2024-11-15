@@ -1,24 +1,24 @@
 <script>
-  import * as bootstrap from "bootstrap";
-  import { onMount } from "svelte";
-  import Ask from "./Ask.svelte";
-  import Item from "./Item.svelte";
-  import List from "./List.svelte";
-  import SurveyList from "./SurveyList.svelte";
-  import CreateSurvey from "./CreateSurvey.svelte";
-  import Export from "./Export.svelte";
-  import { _ } from "svelte-i18n";
-  import en from "./locales/en.json";
-  import de from "./locales/de.json";
-  import { init, addMessages, getLocaleFromNavigator } from "svelte-i18n";
-  const defaultLocale = "en";
+  import * as bootstrap from 'bootstrap';
+  import { onMount } from 'svelte';
+  import Ask from './Ask.svelte';
+  import Item from './Item.svelte';
+  import List from './List.svelte';
+  import SurveyList from './SurveyList.svelte';
+  import CreateSurvey from './CreateSurvey.svelte';
+  import Export from './Export.svelte';
+  import { _ } from 'svelte-i18n';
+  import en from './locales/en.json';
+  import de from './locales/de.json';
+  import { init, addMessages, getLocaleFromNavigator } from 'svelte-i18n';
+  const defaultLocale = 'en';
 
-  addMessages("en", en);
-  addMessages("de", de);
+  addMessages('en', en);
+  addMessages('de', de);
 
   let languages = [
-    { id: 0, locale: "us", text: `English` },
-    { id: 1, locale: "de", text: `Deutsch` },
+    { id: 0, locale: 'us', text: `English` },
+    { id: 1, locale: 'de', text: `Deutsch` }
   ];
 
   let selected = $state(0);
@@ -30,15 +30,15 @@
   });
 
   init({
-    fallbackLocale: "en",
-    initialLocale: getLocaleFromNavigator(),
+    fallbackLocale: 'en',
+    initialLocale: getLocaleFromNavigator()
   });
 
   function switchLanguage() {
     let s = languages[selected];
     init({
-      fallbackLocale: "en",
-      initialLocale: s.locale,
+      fallbackLocale: 'en',
+      initialLocale: s.locale
     });
   }
 
@@ -57,11 +57,11 @@
   let surveyItems = $state([]);
 
   let connected = $state(true);
-  let password = $state("");
-  let passwordModalAlert = $state("");
-  let deleteModalAlert = $state("");
-  let alertSuccess = $state("");
-  let alertDanger = $state("");
+  let password = $state('');
+  let passwordModalAlert = $state('');
+  let deleteModalAlert = $state('');
+  let alertSuccess = $state('');
+  let alertDanger = $state('');
 
   class ServerError extends Error {
     constructor(message, statusCode) {
@@ -99,16 +99,10 @@
         connected = true;
 
         if (!questions.ok) {
-          throw new ServerError(
-            $_("response.error.question.general"),
-            statusCode,
-          );
+          throw new ServerError($_('response.error.question.general'), statusCode);
         }
         if (!surveys.ok) {
-          throw new ServerError(
-            $_("response.error.survey.general"),
-            statusCode,
-          );
+          throw new ServerError($_('response.error.survey.general'), statusCode);
         }
 
         return [await questions.json(), await surveys.json()];
@@ -120,16 +114,11 @@
 
         questions.sort(questionOrder);
         items = questions.filter(
-          (x) =>
-            x.state !== answered &&
-            x.state !== hidden &&
-            x.state !== hiddenAnswered,
+          (x) => x.state !== answered && x.state !== hidden && x.state !== hiddenAnswered
         );
         answeredItems = questions.filter((x) => x.state === answered);
         hiddenItems = questions.filter((x) => x.state === hidden);
-        hiddenAnsweredItems = questions.filter(
-          (x) => x.state === hiddenAnswered,
-        );
+        hiddenAnsweredItems = questions.filter((x) => x.state === hiddenAnswered);
         surveyItems = surveys;
 
         updating = false;
@@ -161,30 +150,30 @@
     ev.preventDefault();
 
     await fetch(`api/login`, {
-      method: "POST",
-      body: JSON.stringify({ password: password }),
+      method: 'POST',
+      body: JSON.stringify({ password: password })
     })
       .then((response) => {
         if (response.status === 403) {
-          throw new Error($_("response.error.password"));
+          throw new Error($_('response.error.password'));
         } else if (!response.ok) {
           throw new Error(
-            $_("response.error.login.serverreturn", {
+            $_('response.error.login.serverreturn', {
               values: {
                 status: response.status,
-                statusText: response.statusText,
-              },
-            }),
+                statusText: response.statusText
+              }
+            })
           );
         }
 
         loggedIn = true;
-        passwordModalAlert = "";
-        password = "";
+        passwordModalAlert = '';
+        password = '';
 
         var loginModal = bootstrap.Modal.getOrCreateInstance(
-          document.getElementById("loginModal"),
-          {},
+          document.getElementById('loginModal'),
+          {}
         );
         loginModal.hide();
         updateQuestionsAndSurveys();
@@ -193,10 +182,10 @@
   }
 
   async function logout() {
-    await fetch(`api/logout`, { method: "POST" })
+    await fetch(`api/logout`, { method: 'POST' })
       .then((response) => {
         if (!response.ok) {
-          throw new Error($_("response.error.passwordlogout"));
+          throw new Error($_('response.error.passwordlogout'));
         }
 
         loggedIn = false;
@@ -206,17 +195,17 @@
   }
 
   async function deleteAllQuestions() {
-    await fetch(`api/questions`, { method: "DELETE" })
+    await fetch(`api/questions`, { method: 'DELETE' })
       .then((response) => {
         if (!response.ok) {
-          throw new Error($_("response.error.question.deleteall"));
+          throw new Error($_('response.error.question.deleteall'));
         }
 
         items = [];
-        deleteModalAlert = "";
+        deleteModalAlert = '';
         var deleteModal = bootstrap.Modal.getOrCreateInstance(
-          document.getElementById("deleteModal"),
-          {},
+          document.getElementById('deleteModal'),
+          {}
         );
         deleteModal.hide();
       })
@@ -224,32 +213,32 @@
   }
 
   async function submitSuccess() {
-    alertSuccess = $_("response.success.question.submit");
+    alertSuccess = $_('response.success.question.submit');
     await updateQuestionsAndSurveys();
   }
 
   function submitError(error) {
-    alertDanger = $_("response.error.question.submit", {
-      values: { detail: error },
+    alertDanger = $_('response.error.question.submit', {
+      values: { detail: error }
     });
   }
 
   function dismissAlertSuccess() {
-    alertSuccess = "";
+    alertSuccess = '';
   }
 
   function dismissAlertDanger() {
-    alertDanger = "";
+    alertDanger = '';
   }
 
   function translateAlertDanger(error) {
     console.log(error.message);
     switch (error.message) {
-      case "NetworkError when attempting to fetch resource.":
-        return "response.error.type.network";
+      case 'NetworkError when attempting to fetch resource.':
+        return 'response.error.type.network';
       default:
         // Could not translate in this case
-        return "response.error.type.network";
+        return 'response.error.type.network';
     }
   }
 
@@ -257,21 +246,15 @@
   function getFlagEmoji(countryCode) {
     return countryCode
       .toUpperCase()
-      .replace(/./g, (char) =>
-        String.fromCodePoint(127397 + char.charCodeAt()),
-      );
+      .replace(/./g, (char) => String.fromCodePoint(127397 + char.charCodeAt()));
   }
 </script>
 
 <nav class="navbar">
   <div class="container">
-    <span class="navbar-brand mb-0 h1">{$_("app.title")} </span>
+    <span class="navbar-brand mb-0 h1">{$_('app.title')} </span>
     <span class="ms-auto">
-      <select
-        class="form-select"
-        bind:value={selected}
-        onchange={switchLanguage}
-      >
+      <select class="form-select" bind:value={selected} onchange={switchLanguage}>
         {#each languages as lang}
           {#if lang.id === 0}
             <option value={lang.id} selected="selected">
@@ -290,15 +273,10 @@
 
     <span class="navbar-brand mb-0 h1">
       {#if loggedIn}
-        <button type="button" onclick={logout} class="btn"
-          >{$_("app.moderator.logout")}</button
-        >
+        <button type="button" onclick={logout} class="btn">{$_('app.moderator.logout')}</button>
       {:else}
-        <button
-          type="button"
-          class="btn"
-          data-bs-toggle="modal"
-          data-bs-target="#loginModal">{$_("app.moderator.login")}</button
+        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#loginModal"
+          >{$_('app.moderator.login')}</button
         >
       {/if}
     </span>
@@ -306,26 +284,18 @@
 </nav>
 <main>
   <div class="container">
-    {#if alertSuccess !== ""}
+    {#if alertSuccess !== ''}
       <div class="alert alert-success alert-dismissible" role="alert">
         {alertSuccess}
-        <button
-          onclick={dismissAlertSuccess}
-          type="button"
-          class="btn-close"
-          aria-label="Close"
+        <button onclick={dismissAlertSuccess} type="button" class="btn-close" aria-label="Close"
         ></button>
       </div>
     {/if}
 
-    {#if alertDanger !== ""}
+    {#if alertDanger !== ''}
       <div class="alert alert-danger alert-dismissible" role="alert">
         {$_(translateAlertDanger(alertDanger))}
-        <button
-          onclick={dismissAlertDanger}
-          type="button"
-          class="btn-close"
-          aria-label="Close"
+        <button onclick={dismissAlertDanger} type="button" class="btn-close" aria-label="Close"
         ></button>
       </div>
     {/if}
@@ -338,11 +308,11 @@
           class="btn btn-outline-primary"
           disabled={updating}
         >
-          {$_("app.refresh")}
+          {$_('app.refresh')}
         </button>
         {#if !connected}
           <span class="text-center text-muted fst-italic">
-            {$_("status.disconnected")}
+            {$_('status.disconnected')}
           </span>
         {/if}
       </div>
@@ -354,7 +324,7 @@
             data-bs-toggle="modal"
             data-bs-target="#exportModal"
           >
-            {$_("app.moderator.export")}
+            {$_('app.moderator.export')}
           </button>
           <button
             type="button"
@@ -362,7 +332,7 @@
             data-bs-toggle="modal"
             data-bs-target="#deleteModal"
           >
-            {$_("app.moderator.deleteall")}
+            {$_('app.moderator.deleteall')}
           </button>
         </div>
       {/if}
@@ -382,7 +352,7 @@
 
     {#if answeredItems.length > 0}
       <div class="mt-3">
-        {$_("app.questions.answered")}
+        {$_('app.questions.answered')}
         <ul class="list-group">
           <List items={answeredItems} {loggedIn} />
         </ul>
@@ -391,7 +361,7 @@
 
     {#if hiddenItems.length > 0}
       <div class="mt-3">
-        {$_("app.questions.hidden")}
+        {$_('app.questions.hidden')}
         <ul class="list-group">
           <List items={hiddenItems} {loggedIn} />
         </ul>
@@ -409,13 +379,11 @@
   </div>
   <div class="mt-3">
     <p class="text-center text-muted fst-italic">
-      {$_("app.opensource")}
-      <a href="https://github.com/joachimschmidt557/nochfragen" target="_blank"
-        >open source</a
-      >.
+      {$_('app.opensource')}
+      <a href="https://github.com/joachimschmidt557/nochfragen" target="_blank">open source</a>.
 
-      <a href="imprint" target="_blank">{$_("app.imprint")}</a>
-      <a href="privacy-policy" target="_blank">{$_("app.privacy_policy")}</a>
+      <a href="imprint" target="_blank">{$_('app.imprint')}</a>
+      <a href="privacy-policy" target="_blank">{$_('app.privacy_policy')}</a>
     </p>
   </div>
 </main>
@@ -431,41 +399,25 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="loginModalLabel">
-          {$_("app.login.title")}
+          {$_('app.login.title')}
         </h5>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <form onsubmit={login}>
         <div class="modal-body">
-          {#if passwordModalAlert !== ""}
+          {#if passwordModalAlert !== ''}
             <div class="alert alert-danger" role="alert">
               {passwordModalAlert}
             </div>
           {/if}
-          <label for="password" class="form-label"
-            >{$_("app.login.passwordtitle")}</label
-          >
-          <input
-            bind:value={password}
-            type="password"
-            class="form-control"
-            id="password"
-          />
+          <label for="password" class="form-label">{$_('app.login.passwordtitle')}</label>
+          <input bind:value={password} type="password" class="form-control" id="password" />
         </div>
         <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal">{$_("app.login.exit")}</button
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+            >{$_('app.login.exit')}</button
           >
-          <button type="submit" class="btn btn-primary"
-            >{$_("app.login.action")}</button
-          >
+          <button type="submit" class="btn btn-primary">{$_('app.login.action')}</button>
         </div>
       </form>
     </div>
@@ -482,33 +434,26 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="deleteModalLabel">
-          {$_("app.deleteallmodal.title")}
+          {$_('app.deleteallmodal.title')}
         </h5>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        {#if deleteModalAlert !== ""}
+        {#if deleteModalAlert !== ''}
           <div class="alert alert-danger" role="alert">
             {deleteModalAlert}
           </div>
         {/if}
         <p>
-          {$_("app.deleteallmodal.warning")}
+          {$_('app.deleteallmodal.warning')}
         </p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-          >{$_("app.deleteallmodal.exit")}</button
+          >{$_('app.deleteallmodal.exit')}</button
         >
-        <button
-          type="submit"
-          class="btn btn-danger"
-          onclick={deleteAllQuestions}>{$_("app.deleteallmodal.action")}</button
+        <button type="submit" class="btn btn-danger" onclick={deleteAllQuestions}
+          >{$_('app.deleteallmodal.action')}</button
         >
       </div>
     </div>
