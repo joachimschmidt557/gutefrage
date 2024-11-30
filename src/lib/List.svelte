@@ -1,5 +1,5 @@
 <script>
-  import Item from './Item.svelte';
+  import Item from '$lib/Item.svelte';
 
   let { items, loggedIn } = $props();
 </script>

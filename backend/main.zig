@@ -71,7 +71,7 @@ pub fn main() !void {
     } else {
         const listen_address = res.args.@"listen-address" orelse default_listen_address;
         const redis_address = res.args.@"redis-address" orelse default_redis_address;
-        const root_dir = res.args.@"root-dir" orelse "public/";
+        const root_dir = res.args.@"root-dir" orelse "build/";
         const db_file = res.args.@"sqlite-db" orelse "db.sqlite";
         const imprint_url = res.args.@"imprint-url" orelse "/";
         const privacy_policy_url = res.args.@"privacy-policy-url" orelse "/";
@@ -124,10 +124,13 @@ fn startServer(
     try questions.initializeDatabase(&context.db);
     try surveys.initializeDatabase(&context.db);
 
-    try fs.init(allocator, .{
-        .dir_path = try std.fs.path.join(allocator, &.{ root_dir, "build" }),
-        .base_path = "build",
-    });
+    fs.init(allocator, .{
+        .dir_path = try std.fs.path.join(allocator, &.{ root_dir, "_app" }),
+        .base_path = "_app",
+    }) catch |err| {
+        log.err("Error initializing filesystem serve: {}", .{err});
+        std.process.exit(1);
+    };
     defer fs.deinit();
 
     @setEvalBranchQuota(10000);
@@ -137,7 +140,7 @@ fn startServer(
         &context,
         comptime router.Router(*Context, &.{
             builder.get("/", index),
-            builder.get("/build/*", serveFs),
+            builder.get("/_app/*", serveFs),
             builder.get("/imprint", imprint),
             builder.get("/privacy-policy", privacyPolicy),
 
