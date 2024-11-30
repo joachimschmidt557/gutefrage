@@ -1,5 +1,5 @@
 <script>
-  import Survey from './Survey.svelte';
+  import Survey from '$lib/Survey.svelte';
 
   let { surveyItems, loggedIn } = $props();
 </script>

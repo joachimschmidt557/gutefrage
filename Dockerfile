@@ -17,7 +17,7 @@ FROM node:22-alpine3.20 as frontend
 
 WORKDIR /app
 COPY src ./src
-COPY package.json package-lock.json rollup.config.js ./
+COPY package.json package-lock.json svelte.config.js vite.config.js ./
 
 RUN npm i
 RUN npm run build
@@ -25,8 +25,7 @@ RUN npm run build
 FROM alpine:3.20 as app
 
 WORKDIR /app
-COPY public ./public
 COPY --from=backend /app/zig-out/bin/nochfragen .
-COPY --from=frontend /app/public/build ./public/build
+COPY --from=frontend /app/build ./build
 
 ENTRYPOINT ["/app/nochfragen"]

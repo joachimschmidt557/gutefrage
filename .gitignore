@@ -3,6 +3,9 @@
 zig-out/
 zig-cache/
 
+/.svelte-kit
+/build
+
 db.sqlite
 
 .gyro/
