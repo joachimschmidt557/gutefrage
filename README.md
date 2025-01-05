@@ -16,7 +16,7 @@ one upvote for a single question.
 
 `nochfragen` uses redis as an emphemeral storage backend.
 
-## Building
+## Development
 
 ### Backend
 
@@ -28,6 +28,14 @@ gyro build
 ```
 
 ### Frontend
+
+Set up an example `.env` file for the build:
+
+```
+cp .env.example .env
+```
+
+Then, build the static site:
 
 ```
 npm i

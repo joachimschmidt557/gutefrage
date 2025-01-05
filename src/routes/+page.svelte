@@ -1,17 +1,19 @@
 <script>
   import * as bootstrap from 'bootstrap';
   import { onMount } from 'svelte';
+  import { _, init, addMessages, getLocaleFromNavigator } from 'svelte-i18n';
+
   import Ask from '$lib/Ask.svelte';
   import Item from '$lib/Item.svelte';
   import List from '$lib/List.svelte';
   import SurveyList from '$lib/SurveyList.svelte';
   import CreateSurvey from '$lib/CreateSurvey.svelte';
   import Export from '$lib/Export.svelte';
-  import { _ } from 'svelte-i18n';
+
   import en from '$lib/locales/en.json';
   import de from '$lib/locales/de.json';
-  import { init, addMessages, getLocaleFromNavigator } from 'svelte-i18n';
-  const defaultLocale = 'en';
+
+  import { PUBLIC_IMPRINT_URL, PUBLIC_PRIVACY_POLICY_URL } from '$env/static/public';
 
   addMessages('en', en);
   addMessages('de', de);
@@ -382,8 +384,8 @@
       {$_('app.opensource')}
       <a href="https://github.com/joachimschmidt557/nochfragen" target="_blank">open source</a>.
 
-      <a href="imprint" rel="external" target="_blank">{$_('app.imprint')}</a>
-      <a href="privacy-policy" rel="external" target="_blank">{$_('app.privacy_policy')}</a>
+      <a href={PUBLIC_IMPRINT_URL} rel="external" target="_blank">{$_('app.imprint')}</a>
+      <a href={PUBLIC_PRIVACY_POLICY_URL} rel="external" target="_blank">{$_('app.privacy_policy')}</a>
     </p>
   </div>
 </main>

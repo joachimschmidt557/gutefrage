@@ -42,8 +42,6 @@ pub fn main() !void {
         clap.parseParam("--redis-address <IP:PORT>      Address to connect to redis") catch unreachable,
         clap.parseParam("--sqlite-db <PATH>             Path to the SQLite database") catch unreachable,
         clap.parseParam("--root-dir <PATH>              Path to the static HTML, CSS and JS content") catch unreachable,
-        clap.parseParam("--imprint-url <URL>            URL of imprint page") catch unreachable,
-        clap.parseParam("--privacy-policy-url <URL>     URL of privacy policy page") catch unreachable,
     };
 
     const parsers = comptime .{
@@ -73,8 +71,6 @@ pub fn main() !void {
         const redis_address = res.args.@"redis-address" orelse default_redis_address;
         const root_dir = res.args.@"root-dir" orelse "build/";
         const db_file = res.args.@"sqlite-db" orelse "db.sqlite";
-        const imprint_url = res.args.@"imprint-url" orelse "/";
-        const privacy_policy_url = res.args.@"privacy-policy-url" orelse "/";
 
         startServer(
             allocator,
@@ -82,8 +78,6 @@ pub fn main() !void {
             redis_address,
             db_file,
             root_dir,
-            imprint_url,
-            privacy_policy_url,
         ) catch |err| {
             log.err("Error during server execution: {}", .{err});
             std.process.exit(1);
@@ -97,16 +91,11 @@ fn startServer(
     redis_address: ParsedAddress,
     db_file: []const u8,
     root_dir: []const u8,
-    imprint_url: []const u8,
-    privacy_policy_url: []const u8,
 ) !void {
     var context: Context = .{
         .redis_client = undefined,
         .db = undefined,
         .root_dir = try allocator.dupe(u8, root_dir),
-
-        .imprint_url = try allocator.dupe(u8, imprint_url),
-        .privacy_policy_url = try allocator.dupe(u8, privacy_policy_url),
     };
     const builder = router.Builder(*Context);
 
@@ -141,8 +130,6 @@ fn startServer(
         comptime router.Router(*Context, &.{
             builder.get("/", index),
             builder.get("/_app/*", serveFs),
-            builder.get("/imprint", imprint),
-            builder.get("/privacy-policy", privacyPolicy),
 
             builder.get("/api/login", loginStatus),
             builder.post("/api/login", login),
@@ -187,18 +174,6 @@ fn index(ctx: *Context, response: *http.Response, request: http.Request) !void {
 fn serveFs(ctx: *Context, response: *http.Response, request: http.Request) !void {
     _ = ctx;
     try fs.serve({}, response, request);
-}
-
-fn imprint(ctx: *Context, response: *http.Response, request: http.Request) !void {
-    _ = request;
-    try response.headers.put("Location", ctx.imprint_url);
-    try response.writeHeader(.moved_permanently);
-}
-
-fn privacyPolicy(ctx: *Context, response: *http.Response, request: http.Request) !void {
-    _ = request;
-    try response.headers.put("Location", ctx.privacy_policy_url);
-    try response.writeHeader(.moved_permanently);
 }
 
 fn loginStatus(ctx: *Context, response: *http.Response, request: http.Request) !void {

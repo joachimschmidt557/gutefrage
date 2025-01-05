@@ -12,3 +12,7 @@ db.sqlite
 deps.zig
 
 .DS_Store
+
+.env
+.env.production
+.env.development
