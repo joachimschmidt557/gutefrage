@@ -1,5 +1,6 @@
 <script>
   import { _, t, format } from 'svelte-i18n';
+
   let { item = $bindable(), loggedIn } = $props();
 
   let choice = $state(-1);

@@ -1,8 +1,6 @@
 <script>
   import * as bootstrap from 'bootstrap';
   import { _, t, format } from 'svelte-i18n';
-
-  let includeHidden = false;
 </script>
 
 <div
