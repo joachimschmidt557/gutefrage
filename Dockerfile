@@ -1,4 +1,4 @@
-FROM alpine:3.20 as backend
+FROM alpine:3.20 AS backend
 
 RUN apk add --no-cache curl
 
@@ -13,7 +13,7 @@ COPY build.zig gyro.lock gyro.zzz ./
 RUN /gyro-0.7.0-linux-x86_64/bin/gyro fetch
 RUN /zig-linux-x86_64-0.10.1/zig build -Drelease-safe
 
-FROM node:22-alpine3.20 as frontend
+FROM node:22-alpine3.20 AS frontend
 
 WORKDIR /app
 COPY src ./src
@@ -22,7 +22,7 @@ COPY package.json package-lock.json svelte.config.js vite.config.js .env ./
 RUN npm i
 RUN npm run build
 
-FROM alpine:3.20 as app
+FROM alpine:3.20 AS app
 
 WORKDIR /app
 COPY --from=backend /app/zig-out/bin/nochfragen .
